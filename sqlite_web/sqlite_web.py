@@ -471,6 +471,29 @@ def table_content(table):
         total_pages=total_pages,
         total_rows=total_rows)
 
+@app.route('/<table>/edit/<row_id>/', methods=['GET', 'POST'])
+@require_table
+def edit_row(table, row_id):
+    ds_table = dataset[table]
+    row = ds_table.get(id=row_id)
+    if request.method == 'POST':
+        for field_name in ds_table.columns:
+            setattr(row, field_name, request.form.get(field_name))
+        row.save()
+        return redirect(url_for('table_content', table=table))
+    return render_template('edit_row.html', row=row)
+
+
+@app.route('/<table>/delete/<row_id>/', methods=['GET', 'POST'])
+@require_table
+def delete_row(table, row_id):
+    ds_table = dataset[table]
+    row = ds_table.get(id=row_id)
+    if request.method == 'POST':
+        row.delete_instance()
+        return redirect(url_for('table_content', table=table))
+    return render_template('delete_row.html', row=row)
+
 @app.route('/<table>/query/', methods=['GET', 'POST'])
 @require_table
 def table_query(table):
