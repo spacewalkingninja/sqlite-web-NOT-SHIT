@@ -33,6 +33,9 @@
             <a href="./?ordering={% if ordering == column %}-{% endif %}{{ column }}">{{ column }}</a>
           </th>
         {% endfor %}
+        <th>
+        Control 
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -48,6 +51,7 @@
               {% endif %}
             </td>
           {% endfor %}
+          <td> <a href="">Edit</a>  <a href="">DROP!!!</a>  </td>
         </tr>
       {% endfor %}
     </tbody>
