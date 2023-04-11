@@ -476,9 +476,11 @@ def table_content(table):
 def edit_row(table, row_id):
     ds_table = dataset[table]
     row = ds_table.get(id=row_id)
+    primary_key_col = ds_table.primary_key
     if request.method == 'POST':
         for field_name in ds_table.columns:
-            setattr(row, field_name, request.form.get(field_name))
+            if field_name != primary_key_col:
+                setattr(row, field_name, request.form.get(field_name))
         row.save()
         return redirect(url_for('table_content', table=table))
     return render_template('edit_row.html', row=row)
@@ -489,10 +491,12 @@ def edit_row(table, row_id):
 def delete_row(table, row_id):
     ds_table = dataset[table]
     row = ds_table.get(id=row_id)
+    primary_key_col = ds_table.primary_key
     if request.method == 'POST':
         row.delete_instance()
         return redirect(url_for('table_content', table=table))
     return render_template('delete_row.html', row=row)
+
 
 @app.route('/<table>/query/', methods=['GET', 'POST'])
 @require_table
@@ -865,7 +869,8 @@ def initialize_app(filename, read_only=False, password=None, url_prefix=None,
         db.close()
         dataset = SqliteDataSet(db, bare_fields=True)
     else:
-        dataset = SqliteDataSet('sqlite:///%s' % filename, bare_fields=True)
+        dataset = 
+('sqlite:///%s' % filename, bare_fields=True)
 
     if url_prefix:
         app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix=url_prefix)
