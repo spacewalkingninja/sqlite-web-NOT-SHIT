@@ -184,6 +184,46 @@ class SqliteDataSet(DataSet):
             '%s_%s' % (virtual_table, suffix) for suffix in suffixes
             for virtual_table in virtual_tables)
 
+    def get(self, table, **kwargs):
+        # Get primary key column name
+        pk_name = self.get_primary_key(table)
+
+        # Construct WHERE clause
+        conditions = []
+        for key, value in kwargs.items():
+            conditions.append('{} = "{}"'.format(key, value))
+        where_clause = ' AND '.join(conditions)
+
+        # Construct query
+        query = 'SELECT * FROM {} WHERE {}'.format(table, where_clause)
+
+        # Execute query and get results
+        cursor = self.query(query)
+        row = cursor.fetchone()
+
+        if not row:
+            raise KeyError('Row not found in table {} with conditions {}'.format(table, kwargs))
+
+        # Create a RowProxy instance for the row and return it
+        return RowProxy(ds_table, dict(row), pk_name)
+
+    def get_primary_key(self, table):
+        # Get index metadata
+        indexes = self.get_indexes(table)
+        pk_index = None
+
+        # Find primary key index
+        for index in indexes:
+            if index.is_primary_key:
+                pk_index = index
+                break
+
+        if not pk_index:
+            raise ValueError('Table {} does not have a primary key'.format(table))
+
+        # Get primary key column name
+        return pk_index.columns[0].name
+    
 #
 # Flask views.
 #
@@ -475,11 +515,11 @@ def table_content(table):
 @require_table
 def edit_row(table, row_id):
     ds_table = dataset[table]
+    primary_key = ds_table._meta.primary_key[0]  # get the primary key column name
     row = ds_table.get(id=row_id)
-    primary_key_col = ds_table.primary_key
     if request.method == 'POST':
         for field_name in ds_table.columns:
-            if field_name != primary_key_col:
+            if field_name != primary_key:
                 setattr(row, field_name, request.form.get(field_name))
         row.save()
         return redirect(url_for('table_content', table=table))
