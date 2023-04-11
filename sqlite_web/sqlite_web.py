@@ -184,6 +184,7 @@ class SqliteDataSet(DataSet):
             '%s_%s' % (virtual_table, suffix) for suffix in suffixes
             for virtual_table in virtual_tables)
 
+    @property
     def get(self, table, **kwargs):
         # Get primary key column name
         pk_name = self.get_primary_key(table)
@@ -207,6 +208,7 @@ class SqliteDataSet(DataSet):
         # Create a RowProxy instance for the row and return it
         return RowProxy(ds_table, dict(row), pk_name)
 
+    @property
     def get_primary_key(self, table):
         # Get index metadata
         indexes = self.get_indexes(table)
