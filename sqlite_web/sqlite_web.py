@@ -911,8 +911,7 @@ def initialize_app(filename, read_only=False, password=None, url_prefix=None,
         db.close()
         dataset = SqliteDataSet(db, bare_fields=True)
     else:
-        dataset = 
-('sqlite:///%s' % filename, bare_fields=True)
+        dataset = ('sqlite:///%s' % filename, bare_fields=True)
 
     if url_prefix:
         app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix=url_prefix)
