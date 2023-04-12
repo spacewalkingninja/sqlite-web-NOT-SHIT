@@ -130,7 +130,49 @@ class SqliteDataSet(DataSet):
     def size_on_disk(self):
         stat = os.stat(self.filename)
         return stat.st_size
+    
+    @property
+    def get(self, table, **kwargs):
+        # Get primary key column name
+        pk_name = self.get_primary_key(table)
 
+        # Construct WHERE clause
+        conditions = []
+        for key, value in kwargs.items():
+            conditions.append('{} = "{}"'.format(key, value))
+        where_clause = ' AND '.join(conditions)
+
+        # Construct query
+        query = 'SELECT * FROM {} WHERE {}'.format(table, where_clause)
+
+        # Execute query and get results
+        cursor = self.query(query)
+        row = cursor.fetchone()
+
+        if not row:
+            raise KeyError('Row not found in table {} with conditions {}'.format(table, kwargs))
+
+        # Create a RowProxy instance for the row and return it
+        return RowProxy(ds_table, dict(row), pk_name)
+
+    @property
+    def get_primary_key(self, table):
+        # Get index metadata
+        indexes = self.get_indexes(table)
+        pk_index = None
+
+        # Find primary key index
+        for index in indexes:
+            if index.is_primary_key:
+                pk_index = index
+                break
+
+        if not pk_index:
+            raise ValueError('Table {} does not have a primary key'.format(table))
+
+        # Get primary key column name
+        return pk_index.columns[0].name
+    
     def get_indexes(self, table):
         return dataset._database.get_indexes(table)
 
@@ -184,47 +226,6 @@ class SqliteDataSet(DataSet):
             '%s_%s' % (virtual_table, suffix) for suffix in suffixes
             for virtual_table in virtual_tables)
 
-    @property
-    def get(self, table, **kwargs):
-        # Get primary key column name
-        pk_name = self.get_primary_key(table)
-
-        # Construct WHERE clause
-        conditions = []
-        for key, value in kwargs.items():
-            conditions.append('{} = "{}"'.format(key, value))
-        where_clause = ' AND '.join(conditions)
-
-        # Construct query
-        query = 'SELECT * FROM {} WHERE {}'.format(table, where_clause)
-
-        # Execute query and get results
-        cursor = self.query(query)
-        row = cursor.fetchone()
-
-        if not row:
-            raise KeyError('Row not found in table {} with conditions {}'.format(table, kwargs))
-
-        # Create a RowProxy instance for the row and return it
-        return RowProxy(ds_table, dict(row), pk_name)
-
-    @property
-    def get_primary_key(self, table):
-        # Get index metadata
-        indexes = self.get_indexes(table)
-        pk_index = None
-
-        # Find primary key index
-        for index in indexes:
-            if index.is_primary_key:
-                pk_index = index
-                break
-
-        if not pk_index:
-            raise ValueError('Table {} does not have a primary key'.format(table))
-
-        # Get primary key column name
-        return pk_index.columns[0].name
     
 #
 # Flask views.
