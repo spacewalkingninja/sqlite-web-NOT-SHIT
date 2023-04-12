@@ -158,7 +158,7 @@ class SqliteDataSet(DataSet):
     @property
     def get_primary_key(self, table):
         # Get index metadata
-        indexes = self.get_indexes(table)
+        indexes = dataset._database.get_indexes(table)
         pk_index = None
 
         # Find primary key index
@@ -518,8 +518,10 @@ def table_content(table):
 @require_table
 def edit_row(table, row_id):
     ds_table = dataset[table]
-    all_indexes = ds_table.get_indexes(table)  # get the primary key column name
+    all_indexes = dataset.get_indexes(table)  # get the primary key column name
+    primary_key = dataset.get_primary_key(table)  # get the primary key column name
     print(all_indexes)
+    print(primary_key)
     row = ds_table.get(id=row_id)
     if request.method == 'POST':
         for field_name in ds_table.columns:
