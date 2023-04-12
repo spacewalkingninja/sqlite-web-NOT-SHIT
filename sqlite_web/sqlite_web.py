@@ -529,7 +529,8 @@ def edit_row(table, row_id):
     #doccd in oveflow
     #primary_key = dataset.get_primary_key(table)  # get the primary key column name
     #print(primary_key)
-    row = dataset.get(table, {primary_key:row_id})
+    #TODO: SOMEBODY FIX THIS 
+    #row = dataset.get(table, {primary_key:row_id})
     
     
     query = ('SELECT * FROM %s WHERE "%s"="$s"' % (table, primary_key, row_id))
