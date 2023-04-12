@@ -536,7 +536,7 @@ def edit_row(table, row_id):
     query = ('SELECT * FROM %s WHERE "%s"="%s"' % (table, primary_key, row_id))
 
     # Execute query and get results
-    cursor = self.query(query)
+    cursor = dataset.query(query)
     row = cursor.fetchone()
     
     print(row)
