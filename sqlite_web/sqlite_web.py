@@ -519,9 +519,20 @@ def table_content(table):
 def edit_row(table, row_id):
     ds_table = dataset[table]
     all_indexes = dataset.get_indexes(table)  # get the primary key column name
-    primary_key = dataset.get_primary_key(table)  # get the primary key column name
+    
     print(all_indexes)
-    print(primary_key)
+    
+    #indexes = dataset._database.get_indexes(table)
+    pk_index = None
+
+    # Find primary key index
+    for index in all_indexes:
+        if index.is_primary_key:
+            pk_index = index
+            break
+    print(pk_index)
+    #primary_key = dataset.get_primary_key(table)  # get the primary key column name
+    #print(primary_key)
     row = ds_table.get(id=row_id)
     if request.method == 'POST':
         for field_name in ds_table.columns:
