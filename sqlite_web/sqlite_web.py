@@ -530,6 +530,14 @@ def edit_row(table, row_id):
     #primary_key = dataset.get_primary_key(table)  # get the primary key column name
     #print(primary_key)
     row = dataset.get(table, {primary_key:row_id})
+    
+    
+    query = ('SELECT * FROM %s WHERE "%s"="$s"' % (table, primary_key, row_id))
+
+    # Execute query and get results
+    cursor = self.query(query)
+    row = cursor.fetchone()
+    
     print(row)
     if request.method == 'POST':
         for field_name in ds_table.columns:
