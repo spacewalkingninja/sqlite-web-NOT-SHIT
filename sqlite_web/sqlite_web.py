@@ -520,27 +520,17 @@ def edit_row(table, row_id):
     ds_table = dataset[table]
     all_indexes = dataset.get_indexes(table)  # get the primary key column name
     
-    print(all_indexes)
     
     #indexes = dataset._database.get_indexes(table)
     
-    table_sql = dataset.query('SELECT l.name FROM pragma_table_info("%s") as l WHERE l.pk = 1' % table).fetchone()[0]
+    primary_key = dataset.query('SELECT l.name FROM pragma_table_info("%s") as l WHERE l.pk = 1' % table).fetchone()[0]
     
     #l.pk in sql query can be l.pk <> 0 if need arises for there to be another such keying 
     #doccd in oveflow
-    print("AND NOW HERE IS")
-    print(table_sql)
-    pk_index = None
-
-    # Find primary key index
-    for index in all_indexes:
-        if index.is_primary_key:
-            pk_index = index
-            break
-    print(pk_index)
     #primary_key = dataset.get_primary_key(table)  # get the primary key column name
     #print(primary_key)
-    row = ds_table.get(id=row_id)
+    row = dataset.get(table, {primary_key:row_id})
+    print(row)
     if request.method == 'POST':
         for field_name in ds_table.columns:
             if field_name != primary_key:
