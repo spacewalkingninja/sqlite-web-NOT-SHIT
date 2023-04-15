@@ -572,6 +572,17 @@ def delete_row(table, row_id):
         return redirect(url_for('table_content', table=table))
     return render_template('delete_row.html', table=table, row=row, fields=fields, pk=primary_key)
 
+@app.route('/<table>/add/', methods=['GET', 'POST'])
+@require_table
+def add_row(table):
+    columns = dataset.get_columns(table)
+    fields = [column.name for column in columns]
+    if request.method == 'POST':
+        query = 'INSERT INTO %s (%s) VALUES (%s)' % (table, ','.join(fields), ','.join(['?'] * len(fields)))
+        values = [request.form[field] for field in fields]
+        dataset.query(query, values)
+        return redirect(url_for('table_content', table=table))
+    return render_template('add_row.html', table=table, fields=fields)
 
 @app.route('/<table>/query/', methods=['GET', 'POST'])
 @require_table
