@@ -548,7 +548,7 @@ def edit_row(table, row_id):
                 setattr(row, field_name, request.form.get(field_name))
         row.save()
         return redirect(url_for('table_content', table=table))
-    return render_template('edit_row.html', row=row)
+    return render_template('edit_row.html', table=table, row=row, fields=fields)
 
 
 @app.route('/<table>/delete/<row_id>/', methods=['GET', 'POST'])
