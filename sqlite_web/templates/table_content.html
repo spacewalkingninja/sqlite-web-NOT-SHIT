@@ -1,28 +1,3 @@
-{% extends "base_table.html" %}
-
-{% block extra_scripts %}
-  <script type="text/javascript">
-    $(function() {
-      var valueToggles = $('a.toggle-value');
-      valueToggles.on('click', function(e) {
-        e.preventDefault();
-        var elem = $(this),
-            truncated = elem.siblings('span.truncated'),
-            full = elem.siblings('span.full');
-        truncated.toggle();
-        full.toggle();
-      });
-    });
-  </script>
-{% endblock %}
-
-{% block content_title %}
-  {{ super() }}
-  <small>{{ ds_table.all().count() }} rows, showing page {{ page }}</small>
-{% endblock %}
-
-{% block content_tab_class %} active{% endblock %}
-
 {% block inner_content %}
   {# add filters #}
   <table class="table table-striped small">
@@ -56,6 +31,11 @@
           </td>
         </tr>
       {% endfor %}
+      <tr>
+        <td colspan="{{ columns|length + 1 }}">
+          <a href="{{ url_for('add_row', table=table, row_id='') }}" class="btn btn-primary">Add Row</a>
+        </td>
+      </tr>
     </tbody>
   </table>
   <nav>
