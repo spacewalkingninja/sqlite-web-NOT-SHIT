@@ -541,7 +541,6 @@ def edit_row(table, row_id):
     cursor = dataset.query(query)
     row = cursor.fetchone()
     fields = [column.name for column in columns]
-        print(row)
     if request.method == 'POST':
             fields = []
             values = []
