@@ -22,7 +22,7 @@ $ sqlite_web /path/to/database.db
 
 ### Developer Fast Re-install to make edits easy:
 ```
-$ python -m pip uninstall sqlite_web -y && python -m pip install git+https://github.com/spacewalkingninja/sqlite-web-NOT-SHIT@master && sqlite_web ./*.sql -p 4200 -H 0.0.0.0
+$ python3 -m pip uninstall sqlite_web -y && python3 -m pip install git+https://github.com/spacewalkingninja/sqlite-web-NOT-SHIT@master && sqlite_web ./*.sql -p 4200 -H 0.0.0.0
 
 ```
 ### Features
