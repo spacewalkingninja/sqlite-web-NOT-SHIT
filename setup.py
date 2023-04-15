@@ -12,12 +12,12 @@ else:
 
 setup(
     name='sqlite-web',
-    version='0.4.1',
+    version='0.4.2',
     description='Web-based SQLite database browser.',
     long_description='Web-based SQLite database browser.',
-    author='Charles Leifer',
-    author_email='coleifer@gmail.com',
-    url='https://github.com/coleifer/sqlite-web',
+    author='Kristian Atanasov',
+    author_email='spacewalkingninja@gmail.com',
+    url='https://github.com/spacewalkingninja/sqlite-web-NOT-SHIT',
     license='MIT',
     install_requires=[
         'flask',
