@@ -11,7 +11,7 @@ Project dependencies:
 ### Installation
 
 ```sh
-$ pip install sqlite-web
+$ pip install git+https://github.com/spacewalkingninja/sqlite-web-NOT-SHIT@master
 ```
 
 ### Usage
