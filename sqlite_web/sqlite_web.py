@@ -562,6 +562,7 @@ def delete_row(table, row_id):
     ds_table = dataset[table]
     primary_key = dataset.query('SELECT l.name FROM pragma_table_info("%s") as l WHERE l.pk = 1' % table).fetchone()[0]
     query = ('SELECT * FROM %s WHERE "%s"="%s"' % (table, primary_key, row_id))
+    columns = dataset.get_columns(table)
     fields = [column.name for column in columns]
     cursor = dataset.query(query)
     row = cursor.fetchone()
