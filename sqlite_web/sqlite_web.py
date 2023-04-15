@@ -560,13 +560,16 @@ def edit_row(table, row_id):
 @require_table
 def delete_row(table, row_id):
     ds_table = dataset[table]
-    row = ds_table.get(id=row_id)
+    primary_key = dataset.query('SELECT l.name FROM pragma_table_info("%s") as l WHERE l.pk = 1' % table).fetchone()[0]
+    query = ('SELECT * FROM %s WHERE "%s"="%s"' % (table, primary_key, row_id))
+    fields = [column.name for column in columns]
+    cursor = dataset.query(query)
+    row = cursor.fetchone()
     if request.method == 'POST':
-        primary_key = dataset.query('SELECT l.name FROM pragma_table_info("%s") as l WHERE l.pk = 1' % table).fetchone()[0]
         query = ('DELETE FROM %s WHERE "%s"="%s"' % (table, primary_key, row_id))
         dataset.query(query)
         return redirect(url_for('table_content', table=table))
-    return render_template('delete_row.html', row=row)
+    return render_template('delete_row.html', table=table, row=row, fields=fields, pk=primary_key)
 
 
 @app.route('/<table>/query/', methods=['GET', 'POST'])
