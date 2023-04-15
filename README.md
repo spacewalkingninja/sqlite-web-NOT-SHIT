@@ -34,9 +34,13 @@ $ python3 -m pip uninstall sqlite_web -y && python3 -m pip install git+https://g
   * Tables
   * Columns (yes, you can drop and rename columns!)
   * Indexes
+  
 * Export data as JSON or CSV.
 * Import JSON or CSV files.
 * Browse table data.
+
+AND NOW BY FUCKING MAKING A GOOD PIECE OF SOFTWARE U CAN ADD OR EDIT OR DELETE ROWS FROM THE TABLES! With love, spacewalkingninja!
+
 
 ### Screenshots
 
