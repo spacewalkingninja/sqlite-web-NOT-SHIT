@@ -1,10 +1,11 @@
 {% extends "base_tables.html" %}
 
 {% block content_title %}
-  <a href="{{ url_for('index') }}">{{ dataset.base_name }}</a> &mdash; {{ table }}
+<a href="{{ url_for('index') }}">{{ dataset.base_name }}</a> — {{ table }}
 {% endblock %}
 
 {% block content %}
+
   <ul class="nav nav-tabs">
     <li class="nav-item">
       <a class="nav-link{% block structure_tab_class %}{% endblock %}" href="{{ url_for('table_structure', table=table) }}">Structure</a>
@@ -21,6 +22,9 @@
     </li>
     <li class="nav-item">
       <a class="nav-link{% block import_tab_class %}{% endblock %}" href="{{ url_for('table_import', table=table) }}">Import</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link{% block add_tab_class %}{% endblock %}" href="{{ url_for('add_item', table=table) }}">Add Item</a>
     </li>
     {% endif %}
     {% block inner_nav %}{% endblock %}
