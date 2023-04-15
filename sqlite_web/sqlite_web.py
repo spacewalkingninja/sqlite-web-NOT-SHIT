@@ -541,14 +541,20 @@ def edit_row(table, row_id):
     cursor = dataset.query(query)
     row = cursor.fetchone()
     fields = [column.name for column in columns]
-    print(row)
+        print(row)
     if request.method == 'POST':
-        for field_name in ds_table.columns:
-            if field_name != primary_key:
-                setattr(row, field_name, request.form.get(field_name))
-        row.save()
-        return redirect(url_for('table_content', table=table))
-    return render_template('edit_row.html', table=table, row=row, fields=fields)
+            fields = []
+            values = []
+            for field_name in ds_table.columns:
+                if field_name != primary_key:
+                    fields.append(field_name)
+                    values.append(request.form.get(field_name))
+            set_clause = ", ".join(['{} = ?'.format(f) for f in fields])
+            values.append(row_id)
+            query = 'UPDATE {} SET {} WHERE {} = ?'.format(table, set_clause, primary_key)
+            dataset.query(query, tuple(values))
+            return redirect(url_for('table_content', table=table))
+    return render_template('edit_row.html', table=table, row=row, fields=fields, pk=primary_key)
 
 
 @app.route('/<table>/delete/<row_id>/', methods=['GET', 'POST'])
