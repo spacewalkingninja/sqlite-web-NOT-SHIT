@@ -525,6 +525,8 @@ def edit_row(table, row_id):
     
     primary_key = dataset.query('SELECT l.name FROM pragma_table_info("%s") as l WHERE l.pk = 1' % table).fetchone()[0]
     
+    columns = dataset.get_columns(table)
+    column_names = [column.name for column in columns]
     #l.pk in sql query can be l.pk <> 0 if need arises for there to be another such keying 
     #doccd in oveflow
     #primary_key = dataset.get_primary_key(table)  # get the primary key column name
@@ -538,7 +540,7 @@ def edit_row(table, row_id):
     # Execute query and get results
     cursor = dataset.query(query)
     row = cursor.fetchone()
-    
+    fields = [column.name for column in columns]
     print(row)
     if request.method == 'POST':
         for field_name in ds_table.columns:
