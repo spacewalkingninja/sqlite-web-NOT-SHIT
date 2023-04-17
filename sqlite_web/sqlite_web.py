@@ -474,7 +474,7 @@ def table_content(table):
 
     dataset.update_cache(table)
     ds_table = dataset[table]
-    isreadonly = dataset.is_readonly()
+    isreadonly = dataset.is_readonly
     
     total_rows = ds_table.all().count()
     rows_per_page = app.config['ROWS_PER_PAGE']
