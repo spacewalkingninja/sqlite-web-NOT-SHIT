@@ -526,42 +526,28 @@ def table_content(table):
 def edit_row(table, row_id):
     ds_table = dataset[table]
     all_indexes = dataset.get_indexes(table)  # get the primary key column name
-    
-    
-    #indexes = dataset._database.get_indexes(table)
-    
-    primary_key = dataset.query('SELECT l.name FROM pragma_table_info("%s") as l WHERE l.pk = 1' % table).fetchone()[0]
-    
-    columns = dataset.get_columns(table)
-    column_names = [column.name for column in columns]
-    #l.pk in sql query can be l.pk <> 0 if need arises for there to be another such keying 
-    #doccd in oveflow
-    #primary_key = dataset.get_primary_key(table)  # get the primary key column name
-    #print(primary_key)
-    #TODO: SOMEBODY FIX THIS 
-    #row = dataset.get(table, {primary_key:row_id})
-    
-    
-    query = ('SELECT * FROM %s WHERE "%s"="%s"' % (table, primary_key, row_id))
-
+    table_info = dataset.query('PRAGMA table_info(%s)' % table).fetchall()
+    pk_columns = [row[1] for row in table_info if row[5]]
+    columns = [{"name": row[1], "type": row[2]} for row in table_info]
+    query = ('SELECT * FROM %s WHERE "%s"="%s"' % (table, pk_columns[0], row_id))
     # Execute query and get results
     cursor = dataset.query(query)
     row = cursor.fetchone()
-    fields = [column.name for column in columns]
+    fields = [column for column in columns]
     if request.method == 'POST':
-            fields = []
-            values = []
-            for field_name in ds_table.columns:
-                if field_name != primary_key:
-                    fields.append(field_name)
-                    values.append(request.form.get(field_name))
-            set_clause = ", ".join(['{} = ?'.format(f) for f in fields])
-            values.append(row_id)
-            query = 'UPDATE {} SET {} WHERE {} = ?'.format(table, set_clause, primary_key)
-            dataset.query(query, tuple(values))
-            return redirect(url_for('table_content', table=table))
-    return render_template('edit_row.html', table=table, row=row, fields=fields, pk=primary_key)
-
+        values = []
+        for column in fields:
+            if column["name"] != pk_columns[0]:
+                if column["type"] == 'BLOB':
+                    values.append(request.files[column["name"]].read())
+                else:
+                    values.append(request.form.get(column["name"]))
+        set_clause = ", ".join(['{} = ?'.format(column["name"]) for column in fields if column["name"] != pk_columns[0]])
+        values.append(row_id)
+        query = 'UPDATE {} SET {} WHERE {} = ?'.format(table, set_clause, pk_columns[0])
+        dataset.query(query, tuple(values))
+        return redirect(url_for('table_content', table=table))
+    return render_template('edit_row.html', table=table, row=row, fields=fields, pk_columns=pk_columns)
 
 @app.route('/<table>/delete/<row_id>/', methods=['GET', 'POST'])
 @require_table
