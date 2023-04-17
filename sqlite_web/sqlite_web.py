@@ -474,6 +474,8 @@ def table_content(table):
 
     dataset.update_cache(table)
     ds_table = dataset[table]
+    isreadonly = dataset.is_readonly()
+    
     total_rows = ds_table.all().count()
     rows_per_page = app.config['ROWS_PER_PAGE']
     total_pages = int(math.ceil(total_rows / float(rows_per_page)))
@@ -494,6 +496,9 @@ def table_content(table):
         query = query.order_by(field)
 
     field_names = ds_table.columns
+    
+    primary_key = dataset.query('SELECT l.name FROM pragma_table_info("%s") as l WHERE l.pk = 1' % table).fetchone()[0]
+    
     columns = [f.column_name for f in ds_table.model_class._meta.sorted_fields]
 
     table_sql = dataset.query(
@@ -512,7 +517,9 @@ def table_content(table):
         query=query,
         table=table,
         total_pages=total_pages,
-        total_rows=total_rows)
+        total_rows=total_rows,
+        primary_key=primary_key,
+        isreadonly = isreadonly)
 
 @app.route('/<table>/edit/<row_id>/', methods=['GET', 'POST'])
 @require_table
