@@ -541,7 +541,13 @@ def edit_row(table, row_id):
                 if column["type"] == 'BLOB':
                     values.append(request.files[column["name"]].read())
                 else:
-                    values.append(request.form.get(column["name"]))
+                    field_value = request.form.get(column["name"])
+                    if field_value == 'GODSaysThisIsNull':
+                        values.append(None)
+                    elif field_value == 'GODSaysThisIsEmpty':
+                        values.append('')
+                    else:
+                        values.append(request.form.get(column["name"]))
         set_clause = ", ".join(['{} = ?'.format(column["name"]) for column in fields if column["name"] != pk_columns[0]])
         values.append(row_id)
         query = 'UPDATE {} SET {} WHERE {} = ?'.format(table, set_clause, pk_columns[0])
