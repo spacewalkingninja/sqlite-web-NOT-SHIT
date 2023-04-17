@@ -21,6 +21,11 @@
       {% else %}
         <input type="text" class="form-control" id="{{ field.name }}" name="{{ field.name }}" value="{{ row[loop.index - 1]  }}">
       {% endif %}
+      <br>
+      <small>
+        <br>Enter "GODSaysThisIsNull" to set this field to NULL.
+        <br>Enter "GODSaysThisIsEmpty" to set this field to an empty string.
+      </small>
     </div>
   {% endfor %}
   <button type="submit" class="btn btn-primary">Save</button>
